@@ -33,7 +33,7 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
-    Q_INVOKABLE virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    Q_INVOKABLE virtual bool setData(const QModelIndex &new_index, const QVariant &value, int role = Qt::EditRole) override;
 
     Q_INVOKABLE void click();
 

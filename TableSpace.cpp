@@ -41,12 +41,12 @@ QVariant TableSpace::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool TableSpace::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TableSpace::setData(const QModelIndex &new_index, const QVariant &value, int role)
 {
-    quint16 index_list = index.row() * mm_width + index.column();
+    quint16 new_index_list = new_index.row() * mm_width + new_index.column();
     QString color = value.toString();
-    mm_table[index_list] = value.toString();
-    emit dataChanged(index, index);
+    mm_table[new_index_list] = value.toString();
+    emit dataChanged(new_index, new_index);
     return true;
 }
 
