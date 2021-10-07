@@ -1,15 +1,15 @@
-#ifndef BACKEND_H
-#define BACKEND_H
+#ifndef TABLESPACE_H
+#define TABLESPACE_H
 
 #include <QObject>
 #include <QAbstractTableModel>
 #include <qqml.h>
 #include <QRandomGenerator>
-
 #include <QDebug>
 
 #define WIDTH_SPACE 9
 #define HEIGHT_SPACE 9
+#define COUNT_BALL 3
 
 enum Color
 {
@@ -19,32 +19,33 @@ enum Color
     Black
 };
 
-class BackEnd : public QAbstractTableModel
+class TableSpace: public QAbstractTableModel
 {
     Q_OBJECT
     QML_ELEMENT
     QML_ADDED_IN_MINOR_VERSION(1)
 
-    enum Roles {
-        CellRole
-    };
-
 public:
+    TableSpace(QObject *parent = nullptr);
 
-    BackEnd(QObject *parent = nullptr);
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
-    int rowCount(const QModelIndex & = QModelIndex()) const override;
-
-    int columnCount(const QModelIndex & = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+    Q_INVOKABLE virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    Q_INVOKABLE void click(const QModelIndex &indexFrom, const QModelIndex &indexTo);
+    Q_INVOKABLE void click();
 
+signals:
+    void gameEnd();
+
+private:
     QString getValue(const QModelIndex &index) const;
 
     QString generateColor();
-    quint16 generateIndex();
+
+    quint16 generateIndex(QModelIndex &index);
 
 private:
     quint8 mm_width;
@@ -54,7 +55,6 @@ private:
     QMap<quint16, QString>  mm_table;
     QRandomGenerator        mm_rand;            //!< объект рандома
 
-    quint16 tmp;
 };
 
-#endif // BACKEND_H
+#endif // TABLESPACE_H

@@ -64,5 +64,11 @@ Window {
         anchors.rightMargin: 10
     }
 
-    GameSpace{}
+    GameSpace{
+    anchors.top: button_new_game.bottom
+    anchors.topMargin: 20
+    anchors.bottom: parent.bottom
+    anchors.bottomMargin: 20
+    anchors.horizontalCenter: parent.horizontalCenter
+    }
 }
