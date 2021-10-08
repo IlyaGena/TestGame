@@ -2,12 +2,14 @@
 
 TableSpace::TableSpace(QObject *parent)
 {
+
+    mm_score = 0;
     mm_width = WIDTH_SPACE;
     mm_height = HEIGHT_SPACE;
     mm_size = mm_width * mm_height;
 
     for(auto i = 0; i < mm_size; i++)
-        mm_table.insert(i, "white");
+        mm_table.insert(i, "#ffffff");
 }
 
 int TableSpace::rowCount(const QModelIndex &parent) const
@@ -32,6 +34,7 @@ QVariant TableSpace::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
     {
         QString value = getValue(index);
+        quint16 new_index_list = index.row() * mm_width + index.column();
         return value;
     }
     default:
@@ -50,33 +53,54 @@ bool TableSpace::setData(const QModelIndex &new_index, const QVariant &value, in
     return true;
 }
 
-void TableSpace::click()
+void TableSpace::step()
 {
-    qDebug() << "Click!!!!";
+    qDebug() << "Step!!!!";
 
     QModelIndex index_model;
-
-    QList<QString> listVal = mm_table.values();
-
-    if (!listVal.contains("white"))
-    {
-        emit gameEnd();
-        return;
-    }
 
     for(auto i = 0; i < COUNT_BALL; i ++)
     {
         quint16 index_list = generateIndex(index_model);
         QString value = generateColor();
 
-        if (mm_table.value(index_list) == "white" || mm_table.value(index_list) == "#ffffff")
+        if (mm_table.value(index_list) == "#ffffff")
         {
-            mm_table.insert(index_list, value);
+            mm_table[index_list] = value;
             emit dataChanged(index_model, index_model);
         }
         else
+        {
+            qDebug() << "Index fail: " << index_list << " Val: " << mm_table.value(index_list);
             i--;
+        }
     }
+
+    QList<QString> listVal = mm_table.values();
+
+    if (!listVal.contains("#ffffff"))
+    {
+        emit gameEnd();
+        return;
+    }
+    mm_score += 100;
+    emit changeScore(mm_score);
+}
+
+void TableSpace::newGame()
+{
+    for(auto i = 0; i < mm_size; i++)
+        mm_table[i] = "#ffffff";
+
+    auto index_start = this->index(0, 0);
+    auto index_end = this->index(WIDTH_SPACE-1, HEIGHT_SPACE-1);
+    qDebug() << "index_start: " << index_start;
+    qDebug() << "index_end: " << index_end;
+    emit dataChanged(index_start, index_end);
+
+    mm_score = 0;
+    emit changeScore(mm_score);
+    emit newGameStart();
 }
 
 QString TableSpace::getValue(const QModelIndex &index) const
@@ -92,16 +116,16 @@ QString TableSpace::generateColor()
     QString value;
     switch (color) {
     case Color::Red:
-        value = "red";
+        value = "#ff0000";
         break;
     case Color::Blue:
-        value = "blue";
+        value = "#0000ff";
         break;
-    case Color::Yellow:
-        value = "yellow";
+    case Color::Green:
+        value = "#00ff00";
         break;
     case Color::Black:
-        value = "black";
+        value = "#000000";
         break;
     }
 
@@ -111,8 +135,8 @@ QString TableSpace::generateColor()
 
 quint16 TableSpace::generateIndex(QModelIndex& index)
 {
-    quint8 width = mm_rand.generateDouble() * mm_width;
-    quint8 height = mm_rand.generateDouble() * mm_height;
+    quint8 width = mm_rand.bounded(0, WIDTH_SPACE);
+    quint8 height = mm_rand.bounded(0, HEIGHT_SPACE);
 
     index = this->index(width, height);
 

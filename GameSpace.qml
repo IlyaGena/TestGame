@@ -19,14 +19,14 @@ Rectangle {
     property var secondRow: null
     property var secondCol: null
 
-    TableSpace{
-        id: tableSpace
-    }
     Connections {
         target: tableSpace
 
         function onGameEnd() {
-            dialogRec.visible = !dialogRec.visible
+            dialogRec.visible = true
+        }
+        function onNewGameStart(){
+            dialogRec.visible = false
         }
     }
 
@@ -36,6 +36,7 @@ Rectangle {
             id: itemCell
             required property string display
             readonly property real size: 42.9
+            property bool visibleBall: true
 
             implicitWidth: size
             implicitHeight: size
@@ -51,6 +52,7 @@ Rectangle {
 
                 Rectangle{
                     id: ball
+                    visible: itemCell.visibleBall
                     height: parent.height-5
                     width: height
                     color: display
@@ -65,7 +67,6 @@ Rectangle {
                 anchors.fill: parent
 
                 onClicked: {
-                    console.log(cell)
                     if (firstBall == null)
                     {
                         firstBall = itemCell
@@ -74,24 +75,42 @@ Rectangle {
                         firstCol = column
                         firstRow = row
 
+                        if (ball.color == "#ffffff")
+                        {
+                            clearValueFirst()
+                            return
+                        }
+
                         tmpBall.x = firstX+2
                         tmpBall.y = firstY+2
                         tmpBall.color = ball.color
                         tmpBall.visible = ball.visible
+                        tmpBall.opacity = 0.6
+                        firstBall.visibleBall = false
+
+                        console.log("First remember")
                     }
                     else
                     {
                         if (secondBall == null)
                         {
-                            console.log("Run animation")
                             secondBall = itemCell
                             secondX = secondBall.x
                             secondY = secondBall.y
                             secondRow = row
                             secondCol = column
-                            gameSpace.state = 'step'
 
-                            tableSpace.setData(tableSpace.index(firstRow,firstCol), "white")
+                            console.log(ball.color)
+                            if (ball.color != "#ffffff")
+                            {
+                                clearValueSecond()
+                                return
+                            }
+
+                            console.log("Run animation")
+                            gameSpace.state = 'step'
+                            tableSpace.setData(tableSpace.index(firstRow,firstCol), "#ffffff")
+                            firstBall.visibleBall = true
                         }
                     }
                 }
@@ -105,14 +124,19 @@ Rectangle {
         }
     }
 
-    function clearValue()
+    function clearValueFirst()
     {
-        console.log("Clear!")
+        console.log("Clear First!")
         firstBall = null
         firstX = null
         firstY = null
         firstRow = null
         firstCol = null
+        return;
+    }
+    function clearValueSecond()
+    {
+        console.log("Clear Second!")
         secondBall = null
         secondX = null
         secondY = null
@@ -129,14 +153,15 @@ Rectangle {
         anchors.fill: parent
 
         Component.onCompleted: {
-            tableSpace.click()
+            tableSpace.step()
         }
     }
     Rectangle {
         id: dialogRec
         visible: false
 
-        color: "white"
+        color: "#ffffff"
+        opacity: 0.5
 
         Label {
             text: qsTr("Игра окончена!")
@@ -186,9 +211,11 @@ Rectangle {
                 if (!this.running) {
                     console.log("Stop Animation!")
                     tableSpace.setData(tableSpace.index(secondRow,secondCol), tmpBall.color)
-                    tmpBall.visible = false
-                    clearValue()
+                    clearValueFirst()
+                    clearValueSecond()
                     gameSpace.state = ''
+                    tmpBall.visible = !tmpBall.visible
+                    tableSpace.step()
                 }
             }
         }

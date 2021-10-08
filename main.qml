@@ -2,12 +2,24 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 
+import my.app.backend 1.1
+
 Window {
     id: window
     width: 640
     height: 480
     visible: true
     title: qsTr("The test Game")
+
+    TableSpace{
+        id: tableSpace
+    }
+    Connections {
+        target: tableSpace
+        function onChangeScore(score) {
+            countScore.text = score
+        }
+    }
 
     Label {
         id: labelScore
@@ -54,8 +66,13 @@ Window {
 
         background: Rectangle {
             color: "#c9c7b5"
-            border.color: "white"
+            border.color: "#ffffff"
             radius: 10
+        }
+
+        onClicked: {
+            tableSpace.newGame()
+            tableSpace.step()
         }
 
         anchors.top: parent.top

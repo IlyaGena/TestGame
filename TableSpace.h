@@ -15,7 +15,7 @@ enum Color
 {
     Red,
     Blue,
-    Yellow,
+    Green,
     Black
 };
 
@@ -33,12 +33,17 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+
     Q_INVOKABLE virtual bool setData(const QModelIndex &new_index, const QVariant &value, int role = Qt::EditRole) override;
 
-    Q_INVOKABLE void click();
+    Q_INVOKABLE void step();
+
+    Q_INVOKABLE void newGame();
 
 signals:
     void gameEnd();
+    void changeScore(quint16 score);
+    void newGameStart();
 
 private:
     QString getValue(const QModelIndex &index) const;
@@ -51,6 +56,7 @@ private:
     quint8 mm_width;
     quint8 mm_height;
     quint16 mm_size;
+    quint16 mm_score;
 
     QMap<quint16, QString>  mm_table;
     QRandomGenerator        mm_rand;            //!< объект рандома
