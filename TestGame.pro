@@ -1,4 +1,4 @@
-QT += quick qml
+QT += quick qml sql
 
 CONFIG += c++11
 CONFIG += qmltypes
@@ -11,6 +11,7 @@ QML_IMPORT_MAJOR_VERSION = 1
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        Database.cpp \
         TableSpace.cpp \
         main.cpp
 
@@ -28,5 +29,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    TableSpace.h
+    Database.h \
+    TableSpace.h \
+    TableStruct.h
 

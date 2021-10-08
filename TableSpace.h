@@ -7,6 +7,8 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
+#include "Database.h"
+
 #define WIDTH_SPACE 9
 #define HEIGHT_SPACE 9
 #define COUNT_BALL 3
@@ -63,6 +65,8 @@ private:
 
     QMap<quint16, QString>  mm_table;
     QRandomGenerator        mm_rand;            //!< объект рандома
+
+    Database mm_db;
 
 };
 

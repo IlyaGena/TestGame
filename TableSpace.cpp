@@ -1,8 +1,9 @@
 #include "TableSpace.h"
 
-TableSpace::TableSpace(QObject *parent)
+TableSpace::TableSpace(QObject *parent) :
+    QAbstractTableModel(parent),
+    mm_db(this)
 {
-
     mm_score = 0;
     mm_width = WIDTH_SPACE;
     mm_height = HEIGHT_SPACE;
