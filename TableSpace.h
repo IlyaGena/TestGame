@@ -48,9 +48,11 @@ signals:
 private:
     QString getValue(const QModelIndex &index) const;
 
-    QString generateColor();
+    QString generateColor() ;
 
     quint16 generateIndex(QModelIndex &index);
+
+    bool checkVert(const QModelIndex &index, const QString color);
 
 private:
     quint8 mm_width;

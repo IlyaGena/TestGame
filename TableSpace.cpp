@@ -50,6 +50,7 @@ bool TableSpace::setData(const QModelIndex &new_index, const QVariant &value, in
     QString color = value.toString();
     mm_table[new_index_list] = value.toString();
     emit dataChanged(new_index, new_index);
+    checkVert(new_index, color);
     return true;
 }
 
@@ -144,4 +145,65 @@ quint16 TableSpace::generateIndex(QModelIndex& index)
 
     qDebug() << "Generated Index:" << index_list;
     return index_list;
+}
+
+bool TableSpace::checkVert(const QModelIndex& index, const QString color)
+{
+    if (color == "#ffffff")
+        return false;
+//    QList<quint16> listNum;
+    QList<QModelIndex*> list;
+    QModelIndex* newIndex;
+
+    // номер строки
+    auto row = index.row();
+    auto col = index.column();
+
+    // ищем первый совпадающий элемент
+    while (row >= 0) {
+        auto index_tmp = this->index(row,col);
+
+        if(index_tmp.data() == color)
+            newIndex = &index_tmp;
+
+        row--;
+    }
+
+    while (row < HEIGHT_SPACE) {
+
+        if()
+        list.append(newIndex);
+
+        row++;
+    }
+
+
+//    // номер первого элемента столбца в списке
+//    auto index_tmp = index - (row*HEIGHT_SPACE);
+//    // количество совпадений
+//    auto countColor = 0;
+//    while(index_tmp <= mm_size)
+//    {
+//        if(mm_table.value(index_tmp) == color)
+//        {
+//            listNum.append(index_tmp);
+//            countColor++;
+//        }
+
+//        index_tmp += WIDTH_SPACE;
+//    }
+//    if(countColor == 5)
+//    {
+//        bool checkNum = true;
+//        for(auto i = 0; i < listNum.count()-1; i++)
+//        {
+//            if((listNum[i]+WIDTH_SPACE) != listNum[i+1])
+//                checkNum = false;
+//        }
+//        if(checkNum)
+//        {
+//            qDebug() << "Win!";
+//        }
+//    }
+    return false;
 }
