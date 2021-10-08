@@ -51,6 +51,7 @@ bool TableSpace::setData(const QModelIndex &new_index, const QVariant &value, in
     mm_table[new_index_list] = value.toString();
     emit dataChanged(new_index, new_index);
     checkVert(new_index, color);
+    checkHor(new_index, color);
     return true;
 }
 
@@ -84,8 +85,6 @@ void TableSpace::step()
         emit gameEnd();
         return;
     }
-    mm_score += 100;
-    emit changeScore(mm_score);
 }
 
 void TableSpace::newGame()
@@ -151,59 +150,66 @@ bool TableSpace::checkVert(const QModelIndex& index, const QString color)
 {
     if (color == "#ffffff")
         return false;
-//    QList<quint16> listNum;
-    QList<QModelIndex*> list;
-    QModelIndex* newIndex;
+
+    // номер строки
+    auto col = index.column();
+    QList<QModelIndex> list_index;
+
+    for (auto i = 0; i < HEIGHT_SPACE; i++)
+    {
+        auto index_tmp = this->index(i,col);
+
+        if (index_tmp.data() == color)
+            list_index.append(index_tmp);
+        else if (list_index.count() < 5) {
+            list_index.clear();
+        }
+    }
+
+    if (list_index.count() >= 5)
+    {
+        qDebug() << "Seccess vert!";
+        for (auto i = 0; i < list_index.count(); i++)
+            this->setData(list_index[i], "#ffffff");
+
+        mm_score +=100;
+        emit changeScore(mm_score);
+    }
+
+    return false;
+}
+bool TableSpace::checkHor(const QModelIndex& index, const QString color)
+{
+    bool result_check = false;
+    if (color == "#ffffff")
+        return result_check;
 
     // номер строки
     auto row = index.row();
-    auto col = index.column();
+    QList<QModelIndex> list_index;
 
-    // ищем первый совпадающий элемент
-    while (row >= 0) {
-        auto index_tmp = this->index(row,col);
+    for (auto i = 0; i < WIDTH_SPACE; i++)
+    {
+        auto index_tmp = this->index(row,i);
 
-        if(index_tmp.data() == color)
-            newIndex = &index_tmp;
-
-        row--;
+        if (index_tmp.data() == color)
+            list_index.append(index_tmp);
+        else if (list_index.count() < 5) {
+            list_index.clear();
+        }
     }
 
-    while (row < HEIGHT_SPACE) {
+    if (list_index.count() >= 5)
+    {
+        qDebug() << "Seccess hor!";
+        result_check = true;
 
-        if()
-        list.append(newIndex);
+        for (auto i = 0; i < list_index.count(); i++)
+            this->setData(list_index[i], "#ffffff");
 
-        row++;
+        mm_score +=100;
+        emit changeScore(mm_score);
     }
 
-
-//    // номер первого элемента столбца в списке
-//    auto index_tmp = index - (row*HEIGHT_SPACE);
-//    // количество совпадений
-//    auto countColor = 0;
-//    while(index_tmp <= mm_size)
-//    {
-//        if(mm_table.value(index_tmp) == color)
-//        {
-//            listNum.append(index_tmp);
-//            countColor++;
-//        }
-
-//        index_tmp += WIDTH_SPACE;
-//    }
-//    if(countColor == 5)
-//    {
-//        bool checkNum = true;
-//        for(auto i = 0; i < listNum.count()-1; i++)
-//        {
-//            if((listNum[i]+WIDTH_SPACE) != listNum[i+1])
-//                checkNum = false;
-//        }
-//        if(checkNum)
-//        {
-//            qDebug() << "Win!";
-//        }
-//    }
-    return false;
+    return result_check;
 }
