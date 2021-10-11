@@ -36,7 +36,7 @@ Rectangle {
     // обработка сигнала о изменении счета
     Connections {
         target: tableSpace
-        function onChangeScore(score) {
+        function onChangeScore() {
             gameSpace.state = 'scoreHide'
         }
     }

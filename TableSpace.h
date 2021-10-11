@@ -89,9 +89,8 @@ signals:
     void gameEnd();
     /*!
      * \brief changeScore - изменение счета
-     * \param score - новое значение счета
      */
-    void changeScore(quint16 score);
+    void changeScore();
     /*!
      * \brief newGameStart - сигнал начала новой игры
      */

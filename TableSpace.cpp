@@ -154,7 +154,7 @@ void TableSpace::newGame()
 
     // оповещаем GUI о изменении счета
     mm_score = 0;
-    emit changeScore(mm_score);
+    emit changeScore();
     emit newGameStart();
 }
 
@@ -241,7 +241,7 @@ bool TableSpace::checkVert(const QModelIndex& index, const QString color)
 
         // увеличиваем счет
         mm_score +=100;
-        emit changeScore(mm_score);
+        emit changeScore();
     }
 
     return false;
@@ -277,7 +277,7 @@ bool TableSpace::checkHor(const QModelIndex& index, const QString color)
             this->setData(list_index[i], "#ffffff");
 
         mm_score +=100;
-        emit changeScore(mm_score);
+        emit changeScore();
     }
 
     return result_check;
