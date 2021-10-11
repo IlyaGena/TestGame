@@ -30,6 +30,14 @@ Rectangle {
         }
     }
 
+//    Rectangle{
+//        id: tmp
+//        width: 10
+//        height: 10
+//        color: "red"
+//        opacity: 0
+//    }
+
     Component{
         id: cellDelegate
         Item {
@@ -37,6 +45,7 @@ Rectangle {
             required property string display
             readonly property real size: 42.9
             property bool visibleBall: true
+            property double opacityBall: 0
 
             implicitWidth: size
             implicitHeight: size
@@ -48,11 +57,13 @@ Rectangle {
                 width: size
                 height: size
 
-                border.color: '#009999'
+                color: "#facaf5"
 
+                border.color: '#009999'
                 Rectangle{
                     id: ball
                     visible: itemCell.visibleBall
+                    opacity: opacityBall
                     height: parent.height-5
                     width: height
                     color: display
@@ -61,8 +72,49 @@ Rectangle {
 
                     radius: width
                     anchors.centerIn: parent
+
+                    states: [
+                        State {
+                            name: "changeColor"
+                            when: (ball.onColorChanged &&
+                                   ball.color != "#ffffff" &&
+                                   itemCell != firstBall &&
+                                   itemCell != secondBall)
+                        },
+                        State {
+                            name: "colorClear"
+                            when: (ball.onColorChanged &&
+                                   ball.color == "#ffffff" )
+                        }
+                    ]
+
+                    transitions: [
+                        Transition {
+                            from: "*"
+                            to: "changeColor"
+                            OpacityAnimator{
+                                target: ball;
+                                from: 0.1;
+                                to: 1;
+                                duration: 1000
+                                running: true
+                            }
+                        },
+                        Transition {
+                            from: "*"
+                            to: "colorClear"
+                            OpacityAnimator{
+                                target: ball;
+                                from: 1;
+                                to: 0;
+                                duration: 1000
+                                running: true
+                            }
+                        }
+                    ]
                 }
             }
+
             MouseArea {
                 anchors.fill: parent
 
@@ -85,7 +137,8 @@ Rectangle {
                         tmpBall.y = firstY+2
                         tmpBall.color = ball.color
                         tmpBall.visible = ball.visible
-                        tmpBall.opacity = 0.6
+                        tmpBall.border.color = "#000000"
+                        tmpBall.border.width = 3
                         firstBall.visibleBall = false
 
                         console.log("First remember")
@@ -100,7 +153,6 @@ Rectangle {
                             secondRow = row
                             secondCol = column
 
-                            console.log(ball.color)
                             if (ball.color != "#ffffff")
                             {
                                 clearValueSecond()
@@ -111,16 +163,11 @@ Rectangle {
                             gameSpace.state = 'step'
                             tableSpace.setData(tableSpace.index(firstRow,firstCol), "#ffffff")
                             firstBall.visibleBall = true
+                            firstBall.opacityBall = 0
                         }
                     }
                 }
             }
-//            MouseArea{
-//                anchors.fill: parent
-//                onDoubleClicked: {
-//                    tableSpace.click()
-//                }
-//            }
         }
     }
 
@@ -134,6 +181,7 @@ Rectangle {
         firstCol = null
         return;
     }
+
     function clearValueSecond()
     {
         console.log("Clear Second!")
@@ -149,12 +197,9 @@ Rectangle {
         id: tableGame
         model: tableSpace
         delegate: cellDelegate
+        reuseItems: true
 
         anchors.fill: parent
-
-        Component.onCompleted: {
-            tableSpace.step()
-        }
     }
     Rectangle {
         id: dialogRec

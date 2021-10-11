@@ -29,6 +29,7 @@ class TableSpace: public QAbstractTableModel
 
 public:
     TableSpace(QObject *parent = nullptr);
+    ~TableSpace();
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 

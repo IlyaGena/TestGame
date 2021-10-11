@@ -26,22 +26,40 @@ struct TableStruct
 };
 
 
-/// таблица учетных записей пользователей
+/// таблица данных игрового поля
 static const TableStruct TABLE_DATA
 (
         "data",
 
         {
             "id",           //!< 0 - id записи
-            "score",        //!< 1 - счет
-            "data",         //!< 2 - таблица
+            "number",       //!< 1 - номер ячейки
+            "data",         //!< 2 - данные
         },
 
         {
-            "PRIMARY KEY UNIQUE",           //!< 0 - id записи
-            "TEXT NOT NULL",                //!< 1 - счет
-            "BLOB NOT NULL",                //!< 2 - таблица
+            "INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE", //!< 0 - id записи
+            "TEXT NOT NULL",                            //!< 1 - номер ячейки
+            "TEXT NOT NULL",                            //!< 2 - данные
         }
 );
+
+
+/// таблица счета
+static const TableStruct TABLE_SCORE
+(
+        "score",
+
+        {
+            "id",           //!< 0 - id записи
+            "score",        //!< 1 - счет
+        },
+
+        {
+            "INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE",     //!< 0 - id записи
+            "TEXT NOT NULL",                                //!< 1 - счет
+        }
+);
+
 
 #endif // TABLESTRUCT_H

@@ -2,6 +2,7 @@
 
 TableSpace::TableSpace(QObject *parent) :
     QAbstractTableModel(parent),
+    mm_rand(),
     mm_db(this)
 {
     mm_score = 0;
@@ -9,8 +10,28 @@ TableSpace::TableSpace(QObject *parent) :
     mm_height = HEIGHT_SPACE;
     mm_size = mm_width * mm_height;
 
-    for(auto i = 0; i < mm_size; i++)
-        mm_table.insert(i, "#ffffff");
+    auto table = mm_db.getData();
+
+    if (!table.isEmpty())
+    {
+        mm_score = mm_db.getScore();
+        mm_table = table;
+        emit changeScore(mm_score);
+    }
+    else {
+        for(auto i = 0; i < mm_size; i++)
+            mm_table.insert(i, "#ffffff");
+        this->step();
+    }
+
+}
+
+TableSpace::~TableSpace()
+{
+    qDebug() << "Exit!";
+
+//    mm_db.saveData(mm_table, mm_score);
+    mm_db.close();
 }
 
 int TableSpace::rowCount(const QModelIndex &parent) const
@@ -35,7 +56,6 @@ QVariant TableSpace::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
     {
         QString value = getValue(index);
-        quint16 new_index_list = index.row() * mm_width + index.column();
         return value;
     }
     default:
@@ -58,8 +78,6 @@ bool TableSpace::setData(const QModelIndex &new_index, const QVariant &value, in
 
 void TableSpace::step()
 {
-    qDebug() << "Step!!!!";
-
     QModelIndex index_model;
 
     quint16 count_new_ball = COUNT_BALL;
@@ -76,17 +94,13 @@ void TableSpace::step()
         if (mm_table.value(index_list) == "#ffffff")
         {
             mm_table[index_list] = value;
-
             emit dataChanged(index_model, index_model);
 
             checkVert(index_model, value);
             checkHor(index_model, value);
         }
         else
-        {
-            qDebug() << "Index fail: " << index_list << " Val: " << mm_table.value(index_list);
             i--;
-        }
     }
 
     QList<QString> listVal = mm_table.values();
@@ -139,8 +153,6 @@ QString TableSpace::generateColor()
         value = "#000000";
         break;
     }
-
-    qDebug() << "Generated color:" << value;
     return value;
 }
 
@@ -153,7 +165,6 @@ quint16 TableSpace::generateIndex(QModelIndex& index)
 
     auto index_list = width * mm_width + height;
 
-    qDebug() << "Generated Index:" << index_list;
     return index_list;
 }
 
@@ -179,7 +190,6 @@ bool TableSpace::checkVert(const QModelIndex& index, const QString color)
 
     if (list_index.count() >= 5)
     {
-        qDebug() << "Seccess vert!";
         for (auto i = 0; i < list_index.count(); i++)
             this->setData(list_index[i], "#ffffff");
 
@@ -212,7 +222,6 @@ bool TableSpace::checkHor(const QModelIndex& index, const QString color)
 
     if (list_index.count() >= 5)
     {
-        qDebug() << "Seccess hor!";
         result_check = true;
 
         for (auto i = 0; i < list_index.count(); i++)
