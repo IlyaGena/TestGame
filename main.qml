@@ -8,25 +8,29 @@ Window {
     id: window
     width: 640
     height: 480
+
+    maximumHeight: height
+    maximumWidth: width
+
+    minimumHeight: height
+    minimumWidth: width
+
     visible: true
     title: qsTr("The test Game")
 
+    // объект модели таблицы
     TableSpace{
         id: tableSpace
     }
-    Connections {
-        target: tableSpace
-        function onChangeScore(score) {
-            countScore.text = score
-        }
-    }
 
+    // поля счета
     Label {
         id: labelScore
         text: qsTr("Счет:")
         font.pointSize: 15
         font.family: "Helvetica"
         font.italic: true
+        opacity: 1
 
         anchors.left: parent.left
         anchors.leftMargin: 10
@@ -44,6 +48,7 @@ Window {
         anchors.top: labelScore.top
     }
 
+    // кнопка новой игры
     Button {
         id: button_new_game
         width: label_btn.width + 20
@@ -81,11 +86,12 @@ Window {
         anchors.rightMargin: 10
     }
 
+    // игровое поле
     GameSpace{
-    anchors.top: button_new_game.bottom
-    anchors.topMargin: 20
-    anchors.bottom: parent.bottom
-    anchors.bottomMargin: 20
-    anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: button_new_game.bottom
+        anchors.topMargin: 20
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 }

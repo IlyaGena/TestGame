@@ -12,9 +12,13 @@
 
 #define DB_NAME "db.sdb"
 
+/*!
+ * \brief The Database class - класс для работы с БД
+ */
 class Database : public QObject
 {
     Q_OBJECT
+
 public:
     Database(QObject *parent);
 
@@ -29,12 +33,30 @@ public:
     void close();
 
 public:
+    /*!
+     * \brief getData - получить данные из таблицы данных
+     * \return - QMap<quint16, QString>
+     */
     QMap<quint16, QString> getData();
 
+    /*!
+     * \brief getScore - получаем счет
+     * \return - число
+     */
     quint16 getScore();
 
+    /*!
+     * \brief saveData - сохранение данных и счета в БД
+     * \param table - данные
+     * \param score - счет
+     * \return - результат сохранения
+     */
     bool saveData(QMap<quint16, QString> table, quint16 score);
 
+    /*!
+     * \brief deleteData - удаление старых данных и счета
+     * \return - результат удаления
+     */
     bool deleteData();
 
 private:
@@ -62,7 +84,7 @@ private:
     bool commitTable(QSqlTableModel *table);
 
 private:
-    QSqlDatabase mm_database;
+    QSqlDatabase mm_database;       //!< объект БД
 };
 
 #endif // DATABASE_H

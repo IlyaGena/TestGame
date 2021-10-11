@@ -8,6 +8,8 @@ Rectangle {
     id: gameSpace
     color: '#afb8ed'
     width: height
+
+    // переменные необходимые для реализации анимации
     property var firstBall: null
     property var firstX: null
     property var firstY: null
@@ -19,6 +21,7 @@ Rectangle {
     property var secondRow: null
     property var secondCol: null
 
+    // обработка сигналов от модели
     Connections {
         target: tableSpace
 
@@ -30,18 +33,22 @@ Rectangle {
         }
     }
 
-//    Rectangle{
-//        id: tmp
-//        width: 10
-//        height: 10
-//        color: "red"
-//        opacity: 0
-//    }
+    // обработка сигнала о изменении счета
+    Connections {
+        target: tableSpace
+        function onChangeScore(score) {
+            gameSpace.state = 'scoreHide'
+        }
+    }
 
+    // делегат TableView
     Component{
         id: cellDelegate
+
         Item {
+
             id: itemCell
+
             required property string display
             readonly property real size: 42.9
             property bool visibleBall: true
@@ -50,16 +57,17 @@ Rectangle {
             implicitWidth: size
             implicitHeight: size
 
+            // ячейка
             Rectangle {
                 id: cell
-                anchors.centerIn: parent
-
                 width: size
                 height: size
-
-                color: "#facaf5"
-
+                color: "#60bbf7"
                 border.color: '#009999'
+
+                anchors.centerIn: parent
+
+                // шарик ячейки
                 Rectangle{
                     id: ball
                     visible: itemCell.visibleBall
@@ -72,6 +80,8 @@ Rectangle {
 
                     radius: width
                     anchors.centerIn: parent
+
+                    // анимация появления и исчезновения шариков
 
                     states: [
                         State {
@@ -94,7 +104,7 @@ Rectangle {
                             to: "changeColor"
                             OpacityAnimator{
                                 target: ball;
-                                from: 0.1;
+                                from: 0;
                                 to: 1;
                                 duration: 1000
                                 running: true
@@ -115,53 +125,60 @@ Rectangle {
                 }
             }
 
+            // обработка выбора первого шарика и место его перемещения
             MouseArea {
                 anchors.fill: parent
 
                 onClicked: {
                     if (firstBall == null)
                     {
+                        // инициализация параметров
                         firstBall = itemCell
                         firstX = firstBall.x
                         firstY = firstBall.y
                         firstCol = column
                         firstRow = row
 
+                        // если выбран не цветной шарик - очищаем
                         if (ball.color == "#ffffff")
                         {
                             clearValueFirst()
                             return
                         }
 
+                        // перемещение временного шарика
                         tmpBall.x = firstX+2
                         tmpBall.y = firstY+2
                         tmpBall.color = ball.color
                         tmpBall.visible = ball.visible
                         tmpBall.border.color = "#eeff00"
                         tmpBall.border.width = 3
-                        firstBall.visibleBall = false
 
-                        console.log("First remember")
+                        // убираем первый шарик
+                        firstBall.visibleBall = false
                     }
                     else
                     {
                         if (secondBall == null)
                         {
+                            // инициализация параметров
                             secondBall = itemCell
                             secondX = secondBall.x
                             secondY = secondBall.y
                             secondRow = row
                             secondCol = column
 
+                            // если выбран цветной шарик - очищаем
                             if (ball.color != "#ffffff")
                             {
                                 clearValueSecond()
                                 return
                             }
 
-                            console.log("Run animation")
+                            // анимация перемещения временного шарика и изменение значений первой ячейки
                             gameSpace.state = 'step'
                             tableSpace.setData(tableSpace.index(firstRow,firstCol), "#ffffff")
+                            // показываем шарик
                             firstBall.visibleBall = true
                             firstBall.opacityBall = 0
                         }
@@ -171,6 +188,7 @@ Rectangle {
         }
     }
 
+    // методы очистки параметров
     function clearValueFirst()
     {
         console.log("Clear First!")
@@ -193,6 +211,7 @@ Rectangle {
         return;
     }
 
+    // игровое поле
     TableView{
         id: tableGame
         model: tableSpace
@@ -201,6 +220,8 @@ Rectangle {
 
         anchors.fill: parent
     }
+
+    // квадрат окончания игры
     Rectangle {
         id: dialogRec
         visible: false
@@ -221,6 +242,7 @@ Rectangle {
         anchors.fill: parent
     }
 
+    // временный шарик
     Rectangle{
         id: tmpBall
         width: 42.9-5
@@ -232,6 +254,7 @@ Rectangle {
         visible: false
     }
 
+    // анимация передвижения временного шарика и изменение счета
     states: [
         State {
             name: "step"
@@ -241,7 +264,14 @@ Rectangle {
                 y: secondY+2
                 visible: true
             }
+        },
+        State {
+            name: "scoreHide"
+        },
+        State {
+            name: "scoreShow"
         }
+
     ]
     transitions: [
         Transition {
@@ -254,13 +284,50 @@ Rectangle {
             }
             onRunningChanged: {
                 if (!this.running) {
-                    console.log("Stop Animation!")
+                    // изменение параметра второй ячейки
                     tableSpace.setData(tableSpace.index(secondRow,secondCol), tmpBall.color)
+                    // очищение параметров
                     clearValueFirst()
                     clearValueSecond()
                     gameSpace.state = ''
+                    // прячем временных шарик
                     tmpBall.visible = !tmpBall.visible
+                    // запускаем генерацию новых шариков
                     tableSpace.step()
+                }
+            }
+        },
+        Transition {
+            from: "*"
+            to: "scoreHide"
+            OpacityAnimator{
+                target: countScore;
+                from: 1;
+                to: 0;
+                duration: 1000
+                running: true
+            }
+            onRunningChanged: {
+                if (!this.running) {
+                    countScore.text = tableSpace.getScore()
+                    gameSpace.state = 'scoreShow'
+                }
+            }
+        },
+        Transition {
+            from: "*"
+            to: "scoreShow"
+            OpacityAnimator{
+                target: countScore;
+                from: 0;
+                to: 1;
+                duration: 1000
+                running: true
+            }
+            onRunningChanged: {
+                if (!this.running) {
+                    countScore.text = tableSpace.getScore()
+                    gameSpace.state = ''
                 }
             }
         }
