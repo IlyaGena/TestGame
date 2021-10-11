@@ -62,7 +62,13 @@ void TableSpace::step()
 
     QModelIndex index_model;
 
-    for(auto i = 0; i < COUNT_BALL; i ++)
+    quint16 count_new_ball = COUNT_BALL;
+
+    QList<quint16> keys_white = mm_table.keys("#ffffff");
+    if (count_new_ball > keys_white.count())
+        count_new_ball = keys_white.count();
+
+    for(auto i = 0; i < count_new_ball; i ++)
     {
         quint16 index_list = generateIndex(index_model);
         QString value = generateColor();
@@ -70,7 +76,11 @@ void TableSpace::step()
         if (mm_table.value(index_list) == "#ffffff")
         {
             mm_table[index_list] = value;
+
             emit dataChanged(index_model, index_model);
+
+            checkVert(index_model, value);
+            checkHor(index_model, value);
         }
         else
         {
