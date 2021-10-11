@@ -137,7 +137,7 @@ Rectangle {
                         tmpBall.y = firstY+2
                         tmpBall.color = ball.color
                         tmpBall.visible = ball.visible
-                        tmpBall.border.color = "#000000"
+                        tmpBall.border.color = "#eeff00"
                         tmpBall.border.width = 3
                         firstBall.visibleBall = false
 

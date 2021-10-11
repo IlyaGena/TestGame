@@ -35,6 +35,8 @@ public:
 
     bool saveData(QMap<quint16, QString> table, quint16 score);
 
+    bool deleteData();
+
 private:
     /*!
      * \brief initializeTable проверка существовнаия таблицы, если такой нет - создать

@@ -157,8 +157,29 @@ bool Database::saveData(QMap<quint16, QString> table, quint16 score)
     // сохранение данных в таблицу счета
     QSqlTableModel *tableScoreDB = getTable(TABLE_SCORE);
 
+    tableScoreDB->insertRow(0);
     tableScoreDB->setData(tableScoreDB->index(0, 1), score);
 
+    result = commitTable(tableScoreDB);
+
+    return result;
+}
+
+bool Database::deleteData()
+{
+    //////////////////// удаляем данные из БД  /////////////////
+    QSqlTableModel *tableDB = getTable(TABLE_DATA);
+
+    tableDB->removeRows(0, tableDB->rowCount());
+
+    // сохранение изменений
+    bool result = commitTable(tableDB);
+
+    if (!result)
+        return result;
+
+    QSqlTableModel *tableScoreDB = getTable(TABLE_SCORE);
+    tableScoreDB->removeRows(0, tableScoreDB->rowCount());
     result = commitTable(tableScoreDB);
 
     return result;

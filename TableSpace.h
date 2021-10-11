@@ -41,6 +41,8 @@ public:
 
     Q_INVOKABLE void step();
 
+    Q_INVOKABLE quint16 getScore();
+
     Q_INVOKABLE void newGame();
 
 signals:

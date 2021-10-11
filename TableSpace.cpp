@@ -2,6 +2,7 @@
 
 TableSpace::TableSpace(QObject *parent) :
     QAbstractTableModel(parent),
+    mm_score(0),
     mm_rand(),
     mm_db(this)
 {
@@ -17,6 +18,7 @@ TableSpace::TableSpace(QObject *parent) :
         mm_score = mm_db.getScore();
         mm_table = table;
         emit changeScore(mm_score);
+        mm_db.deleteData();
     }
     else {
         for(auto i = 0; i < mm_size; i++)
@@ -30,7 +32,7 @@ TableSpace::~TableSpace()
 {
     qDebug() << "Exit!";
 
-//    mm_db.saveData(mm_table, mm_score);
+    mm_db.saveData(mm_table, mm_score);
     mm_db.close();
 }
 
@@ -110,6 +112,11 @@ void TableSpace::step()
         emit gameEnd();
         return;
     }
+}
+
+quint16 TableSpace::getScore()
+{
+    return mm_score;
 }
 
 void TableSpace::newGame()

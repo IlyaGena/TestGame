@@ -35,7 +35,7 @@ Window {
 
     Text {
         id: countScore
-        text: qsTr("0000")
+        text: tableSpace.getScore()
         font.pointSize: 15
         font.italic: true
 
