@@ -47,7 +47,7 @@ public:
      * \brief columnCount - получение количества столбцов
      * \return - количество столбцов
      */
-    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    Q_INVOKABLE int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
     /*!
      * \brief data - получение информации

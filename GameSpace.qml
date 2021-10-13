@@ -50,7 +50,7 @@ Rectangle {
             id: itemCell
 
             required property string display
-            readonly property real size: 42.9
+            property string size: tableGame.width/tableSpace.columnCount()
             property bool visibleBall: true
             property double opacityBall: 0
 
@@ -216,7 +216,6 @@ Rectangle {
         id: tableGame
         model: tableSpace
         delegate: cellDelegate
-        reuseItems: true
 
         anchors.fill: parent
     }
@@ -332,4 +331,8 @@ Rectangle {
             }
         }
     ]
+
+    onWidthChanged: {
+        tableGame.forceLayout();
+    }
 }
